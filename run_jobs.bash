@@ -27,6 +27,12 @@ TO_RUN="$JOBS_DIR/to_run"
 RUNNING="$JOBS_DIR/running"
 WORK_TREES="$JOBS_DIR/work_trees"
 
+# Create the folders if they don't exist yet.
+[ ! -d "$JOBS_DIR" ] && mkdir $JOBS_DIR
+[ ! -d "$TO_RUN" ] && mkdir $TO_RUN
+[ ! -d "$RUNNING" ] && mkdir $RUNNING
+[ ! -d "$WORK_TREES" ] && mkdir $WORK_TREES
+
 processJobs(){
     # Force the wildcard * to return empty if no matches.
     shopt -s nullglob
@@ -38,15 +44,18 @@ processJobs(){
     while [ ${#jobs[@]} -gt 0 ]; do
 
         # Get the first job in the list.
-        job=${jobs[0]}
-        echo "Now running" $job
+        job_path=${jobs[0]}
+        echo "Now running" $job_path
+
+        # Save the job name in case the user wants to use it in their command.
+        job=$(basename $job_path ".job")
 
         # Parse the relevant parameters.
-        CMD_LINE=$(grep "cmd: " $job)
+        CMD_LINE=$(grep "cmd: " $job_path)
         CMD=${CMD_LINE#"cmd: "}
-        SHA_LINE=$(grep "SHA: " $job)
+        SHA_LINE=$(grep "SHA: " $job_path)
         SHA=${SHA_LINE#"SHA: "}
-        REPO_LINE=$(grep "repo: " $job)
+        REPO_LINE=$(grep "repo: " $job_path)
         REPO=${REPO_LINE#"repo: "}
 
         # If the command should be run with a git repo, check out the code.
@@ -58,8 +67,8 @@ processJobs(){
         fi
 
         # Mark the job as running and update its path.
-        mv $job $RUNNING/
-        NEW_JOB_PATH="$RUNNING/${job##*/}"
+        mv $job_path $RUNNING/
+        NEW_JOB_PATH="$RUNNING/${job_path##*/}"
 
         # Log the start time.
         START_TIME=$(date +"%m-%d-%Y %r")
