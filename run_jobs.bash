@@ -78,8 +78,7 @@ processJobs(){
         # commands. Note that we assume this script was run with the proper
         # conda environment etc. for all of the commands.
         echo "Now running: "$CMD
-        $CMD > $NEW_JOB_PATH.log
-#         eval knockknock discord --webhook-url $DISCORD_WEBHOOK_URL $CMD > $NEW_JOB_PATH.log
+        eval knockknock discord --webhook-url $DISCORD_WEBHOOK_URL $CMD > $NEW_JOB_PATH.log
 #         eval knockknock email \
 #             --recipient-emails $JOB_RECEIVER_EMAIL \
 #             --sender-email $JOB_SENDER_EMAIL \
