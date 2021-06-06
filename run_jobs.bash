@@ -16,8 +16,9 @@ if [ -z $(which knockknock) ]; then
     echo "knockknock is not installed! Please pip install knockknock to get notifications of job completion"
     exit
 fi
-if [ -z $DISCORD_WEBHOOK_URL ]; then
-    echo "You are almost set up to ping your Discord, but you need to set the DISCORD_WEBHOOK_URL evironment variable!"
+if [ -z $JOB_RECEIVER_EMAIL ] || [ -z $JOB_SENDER_EMAIL ]; then
+    echo "You are almost set up to ping your email, but you need to set the environment
+        JOB_RECIPIENT_EMAIL/JOB_SENDER_EMAIL variables!"
     exit
 fi
 
@@ -39,7 +40,7 @@ processJobs(){
         # Get the first job in the list.
         job=${jobs[0]}
         echo "Now running" $job
-        
+
         # Parse the relevant parameters.
         CMD_LINE=$(grep "cmd: " $job)
         CMD=${CMD_LINE#"cmd: "}
@@ -68,7 +69,12 @@ processJobs(){
         # commands. Note that we assume this script was run with the proper
         # conda environment etc. for all of the commands.
         echo "Now running: "$CMD
-        eval knockknock discord --webhook-url $DISCORD_WEBHOOK_URL $CMD > $NEW_JOB_PATH.log
+        $CMD > $NEW_JOB_PATH.log
+#         eval knockknock discord --webhook-url $DISCORD_WEBHOOK_URL $CMD > $NEW_JOB_PATH.log
+#         eval knockknock email \
+#             --recipient-emails $JOB_RECEIVER_EMAIL \
+#             --sender-email $JOB_SENDER_EMAIL \
+#         sleep 10
 
         # Log the end time.
         END_TIME=$(date +"%m-%d-%Y %r")
@@ -88,7 +94,3 @@ while inotifywait -e modify $TO_RUN; do
     processJobs
     echo "Now waiting for new jobs..."
 done
-
-    
-           
-           

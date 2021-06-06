@@ -40,7 +40,7 @@ if [ $REPO_NAME ]; then
 
     # Save the current branch.
     BRANCH=$(git branch --show-current)
-    
+
     # Save our local changes (if needed).
     git stash save -- "$JOB_NAME"
 
@@ -51,7 +51,7 @@ if [ $REPO_NAME ]; then
     git stash list | grep $JOB_NAME && git stash apply --quiet && echo "Applying stashed changes to branch"
     git add -u
     git commit -m "Saving changes to run $JOB_NAME"
-    
+
     #Save the commit SHA so we can save it to our job file.
     SHA=$(git rev-parse HEAD)
 
@@ -61,7 +61,7 @@ if [ $REPO_NAME ]; then
 
     # Print where we're at, just for clarity.
     git status
-    
+
 else
     # If we aren't in a git repo, we put a placeholder.
     SHA=""
